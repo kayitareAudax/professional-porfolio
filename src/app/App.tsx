@@ -22,6 +22,14 @@ import {
   FolderOpen,
   UserCheck,
   ChevronRight,
+  Trophy,
+  BadgeCheck,
+  Star,
+  Award,
+  Newspaper,
+  BookOpen,
+  Mic,
+  ArrowUpRight,
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -56,6 +64,28 @@ interface Education {
   institution: string;
   period: string;
   description: string;
+}
+
+interface Achievement {
+  id: string;
+  title: string;
+  issuer: string;
+  date: string;
+  type: "certificate" | "award" | "recognition";
+  description: string;
+  url: string;
+  image: string;
+}
+
+interface Article {
+  id: string;
+  title: string;
+  publication: string;
+  date: string;
+  type: "publication" | "news" | "blog" | "talk";
+  summary: string;
+  url: string;
+  image: string;
 }
 
 // ─── Default Data ─────────────────────────────────────────────────────────────
@@ -170,6 +200,132 @@ const DEFAULT_EDUCATION: Education[] = [
   },
 ];
 
+const DEFAULT_ACHIEVEMENTS: Achievement[] = [
+  {
+    id: "a1",
+    title: "AWS Certified Solutions Architect – Professional",
+    issuer: "Amazon Web Services",
+    date: "Mar 2024",
+    type: "certificate",
+    description: "Validated expertise in designing distributed systems and selecting appropriate AWS services to build secure, reliable, and cost-optimized architectures at scale.",
+    url: "#",
+    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&h=400&fit=crop&auto=format",
+  },
+  {
+    id: "a2",
+    title: "Certified Kubernetes Administrator (CKA)",
+    issuer: "Cloud Native Computing Foundation",
+    date: "Sep 2023",
+    type: "certificate",
+    description: "Demonstrated proficiency in Kubernetes cluster administration, including installation, configuration, networking, storage, and troubleshooting in production environments.",
+    url: "#",
+    image: "https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=600&h=400&fit=crop&auto=format",
+  },
+  {
+    id: "a3",
+    title: "Best Open Source Infrastructure Tool — OSS Awards",
+    issuer: "Open Source Summit North America",
+    date: "Jun 2023",
+    type: "award",
+    description: "Lumen was recognized as the best new open-source infrastructure project of 2023, competing against 340+ nominations across the distributed systems category.",
+    url: "#",
+    image: "https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=600&h=400&fit=crop&auto=format",
+  },
+  {
+    id: "a4",
+    title: "Google Hash Code — Global Top 2%",
+    issuer: "Google",
+    date: "Feb 2022",
+    type: "recognition",
+    description: "Ranked in the global top 2% out of 10,000+ teams in Google's annual competitive programming competition.",
+    url: "#",
+    image: "https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?w=600&h=400&fit=crop&auto=format",
+  },
+  {
+    id: "a5",
+    title: "MIT EECS Outstanding Thesis Award",
+    issuer: "MIT Department of EECS",
+    date: "Jun 2020",
+    type: "award",
+    description: "Thesis on adaptive load balancing in microservice architectures selected as one of five outstanding B.Sc. theses by the department faculty committee.",
+    url: "#",
+    image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&h=400&fit=crop&auto=format",
+  },
+  {
+    id: "a6",
+    title: "HashiCorp Terraform Associate",
+    issuer: "HashiCorp",
+    date: "Jan 2022",
+    type: "certificate",
+    description: "Certification covering infrastructure-as-code using Terraform — modules, state management, workspaces, and multi-cloud provider configuration.",
+    url: "#",
+    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&h=400&fit=crop&auto=format",
+  },
+];
+
+const DEFAULT_ARTICLES: Article[] = [
+  {
+    id: "ar1",
+    title: "How We Reduced Stripe's Payment API Latency by 38%",
+    publication: "Stripe Engineering Blog",
+    date: "Nov 2024",
+    type: "publication",
+    summary: "A deep-dive into the cache-layer redesign that eliminated hot-path database reads, including the trade-offs we considered and the rollout strategy we used to de-risk the change in production.",
+    url: "#",
+    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop&auto=format",
+  },
+  {
+    id: "ar2",
+    title: "Building Fault-Tolerant Distributed Systems at Scale",
+    publication: "ACM Queue",
+    date: "Aug 2024",
+    type: "publication",
+    summary: "A peer-reviewed paper examining patterns for achieving five-nines reliability in distributed systems — covering consensus protocols, graceful degradation, and chaos engineering methodologies.",
+    url: "#",
+    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&h=400&fit=crop&auto=format",
+  },
+  {
+    id: "ar3",
+    title: "Alex Rivera's Open-Source Lumen Engine Named Tool of the Year",
+    publication: "The New Stack",
+    date: "Jul 2023",
+    type: "news",
+    summary: "Coverage of the OSS Awards ceremony where Lumen was recognized as the standout infrastructure project of 2023, with an interview on the design decisions behind its columnar storage format.",
+    url: "#",
+    image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=600&h=400&fit=crop&auto=format",
+  },
+  {
+    id: "ar4",
+    title: "Real-Time Collaboration at Figma: Inside the OT Engine",
+    publication: "Figma Engineering Blog",
+    date: "Mar 2023",
+    type: "publication",
+    summary: "Co-authored post detailing how Figma's operational transformation engine handles concurrent edits from millions of users, including the conflict-resolution strategies we shipped in 2022.",
+    url: "#",
+    image: "https://images.unsplash.com/photo-1561736778-92e52a7769ef?w=600&h=400&fit=crop&auto=format",
+  },
+  {
+    id: "ar5",
+    title: "Keynote: The Next Decade of Developer Infrastructure",
+    publication: "QCon San Francisco",
+    date: "Oct 2024",
+    type: "talk",
+    summary: "Keynote exploring how AI-assisted tooling, eBPF-based observability, and Wasm are converging to reshape the developer infrastructure stack — with live demos and Q&A.",
+    url: "#",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=400&fit=crop&auto=format",
+  },
+  {
+    id: "ar6",
+    title: "Why I Rewrote My Side Project in Rust (and What I Learned)",
+    publication: "Personal Blog · dev.to",
+    date: "May 2023",
+    type: "blog",
+    summary: "A candid post-mortem on rewriting a Go service in Rust: what the borrow checker forced me to fix, where performance gains actually materialized, and where they didn't.",
+    url: "#",
+    image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&h=400&fit=crop&auto=format",
+  },
+];
+
 const CHAT_RESPONSES: Record<string, string> = {
   default: "Thanks for reaching out! Feel free to ask about my projects, experience, or tech stack. I'd love to connect.",
   hello: "Hey there! I'm Alex Rivera's portfolio bot. Ask me anything about my background, skills, or projects.",
@@ -226,6 +382,7 @@ const NAV_LINKS = [
   { label: "Experience", href: "#experience" },
   { label: "Skills", href: "#skills" },
   { label: "Projects", href: "#projects" },
+  { label: "Recognitions", href: "#recognitions" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -603,6 +760,168 @@ function ProjectsSection({ projects }: { projects: Project[] }) {
   );
 }
 
+// ─── Recognitions (carousel) ──────────────────────────────────────────────────
+
+const ARTICLE_TYPE_META: Record<Article["type"], { icon: React.ReactNode; label: string; cls: string }> = {
+  publication: { icon: <BookOpen size={11} />,    label: "Publication",   cls: "text-primary border-primary/30" },
+  news:        { icon: <Newspaper size={11} />,   label: "Press",         cls: "text-amber-400 border-amber-400/30" },
+  blog:        { icon: <ArrowUpRight size={11} />,label: "Blog",          cls: "text-violet-400 border-violet-400/30" },
+  talk:        { icon: <Mic size={11} />,         label: "Talk / Keynote",cls: "text-emerald-400 border-emerald-400/30" },
+};
+
+const ACHIEVE_TYPE_META: Record<Achievement["type"], { icon: React.ReactNode; label: string; cls: string }> = {
+  certificate: { icon: <BadgeCheck size={11} />, label: "Certificate",  cls: "text-primary border-primary/30" },
+  award:       { icon: <Trophy size={11} />,     label: "Award",        cls: "text-amber-400 border-amber-400/30" },
+  recognition: { icon: <Star size={11} />,       label: "Recognition",  cls: "text-violet-400 border-violet-400/30" },
+};
+
+function Carousel({ children, speed = 40 }: { children: React.ReactNode[]; speed?: number }) {
+  const duplicated = [...children, ...children];
+  const duration = `${speed}s`;
+  return (
+    <div className="overflow-hidden relative">
+      <style>{`
+        @keyframes marquee-scroll {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .carousel-track { animation: marquee-scroll ${duration} linear infinite; }
+        .carousel-track:hover { animation-play-state: paused; }
+      `}</style>
+      <div className="carousel-track flex gap-5" style={{ width: "max-content" }}>
+        {duplicated.map((child, i) => (
+          <div key={i} style={{ width: "300px", flexShrink: 0 }}>{child}</div>
+        ))}
+      </div>
+      {/* fade edges */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-background to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-background to-transparent z-10" />
+    </div>
+  );
+}
+
+function ArticleCard({ item }: { item: Article }) {
+  const meta = ARTICLE_TYPE_META[item.type];
+  return (
+    <a
+      href={item.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group flex flex-col bg-card border border-border hover:border-primary/50 transition-all duration-300 overflow-hidden h-full"
+      style={{ borderRadius: "2px" }}
+    >
+      <div className="relative h-44 bg-secondary overflow-hidden">
+        {item.image ? (
+          <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 brightness-75 group-hover:brightness-90" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center"><BookOpen size={28} className="text-muted-foreground/20" /></div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
+        <span className={`absolute top-3 left-3 inline-flex items-center gap-1 font-mono text-[9px] tracking-widest border px-2 py-1 bg-card/80 backdrop-blur-sm ${meta.cls}`}>
+          {meta.icon} {meta.label.toUpperCase()}
+        </span>
+      </div>
+      <div className="p-4 flex flex-col flex-1 gap-2">
+        <p className="font-mono text-[9px] tracking-widest text-muted-foreground uppercase">{item.date} · {item.publication}</p>
+        <h4 className="font-sans font-semibold text-sm text-foreground leading-snug group-hover:text-primary transition-colors line-clamp-2">{item.title}</h4>
+        <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3 flex-1">{item.summary}</p>
+        <span className="inline-flex items-center gap-1 text-xs text-primary/60 group-hover:text-primary transition-colors mt-1 font-mono">
+          Read more <ArrowUpRight size={11} />
+        </span>
+      </div>
+    </a>
+  );
+}
+
+function AchievementCard({ item }: { item: Achievement }) {
+  const meta = ACHIEVE_TYPE_META[item.type];
+  return (
+    <a
+      href={item.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group flex flex-col bg-card border border-border hover:border-primary/50 transition-all duration-300 overflow-hidden h-full"
+      style={{ borderRadius: "2px" }}
+    >
+      <div className="relative h-44 bg-secondary overflow-hidden">
+        {item.image ? (
+          <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 brightness-60 group-hover:brightness-75" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center"><Trophy size={28} className="text-muted-foreground/20" /></div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
+        <span className={`absolute top-3 left-3 inline-flex items-center gap-1 font-mono text-[9px] tracking-widest border px-2 py-1 bg-card/80 backdrop-blur-sm ${meta.cls}`}>
+          {meta.icon} {meta.label.toUpperCase()}
+        </span>
+      </div>
+      <div className="p-4 flex flex-col flex-1 gap-2">
+        <p className="font-mono text-[9px] tracking-widest text-muted-foreground uppercase">{item.date} · {item.issuer}</p>
+        <h4 className="font-sans font-semibold text-sm text-foreground leading-snug group-hover:text-primary transition-colors line-clamp-2">{item.title}</h4>
+        <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3 flex-1">{item.description}</p>
+        <span className="inline-flex items-center gap-1 text-xs text-primary/60 group-hover:text-primary transition-colors mt-1 font-mono">
+          View credential <ArrowUpRight size={11} />
+        </span>
+      </div>
+    </a>
+  );
+}
+
+function RecognitionsSection({ articles, achievements }: { articles: Article[]; achievements: Achievement[] }) {
+  const [tab, setTab] = useState<"papers" | "awards">("papers");
+
+  return (
+    <section id="recognitions" className="py-24 lg:py-32 bg-secondary/30">
+      <div className="max-w-6xl mx-auto px-6 mb-10">
+        <SectionLabel>Recognitions</SectionLabel>
+        <div className="flex items-end justify-between flex-wrap gap-6">
+          <h2 className="text-4xl lg:text-5xl font-serif text-foreground" style={{ fontFamily: "'Playfair Display', serif" }}>
+            Papers &amp; <span className="italic text-primary">Awards</span>
+          </h2>
+          <div className="flex border border-border" style={{ borderRadius: "2px" }}>
+            {([
+              { id: "papers", label: "Papers Published", icon: <BookOpen size={14} /> },
+              { id: "awards", label: "Awards & Certificates", icon: <Trophy size={14} /> },
+            ] as const).map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setTab(t.id)}
+                className={`flex items-center gap-2 px-5 py-2.5 text-sm font-sans font-medium transition-colors duration-200 ${
+                  tab === t.id
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {t.icon} {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {tab === "papers" && (
+        articles.length > 0 ? (
+          <Carousel speed={articles.length > 3 ? 35 : 25}>
+            {articles.map((a) => <ArticleCard key={a.id} item={a} />)}
+          </Carousel>
+        ) : (
+          <p className="text-center py-12 font-mono text-sm text-muted-foreground">No articles yet. Add some in the Admin panel.</p>
+        )
+      )}
+
+      {tab === "awards" && (
+        achievements.length > 0 ? (
+          <Carousel speed={achievements.length > 3 ? 35 : 25}>
+            {achievements.map((a) => <AchievementCard key={a.id} item={a} />)}
+          </Carousel>
+        ) : (
+          <p className="text-center py-12 font-mono text-sm text-muted-foreground">No awards yet. Add some in the Admin panel.</p>
+        )
+      )}
+    </section>
+  );
+}
+
+
 // ─── Footer / Contact ─────────────────────────────────────────────────────────
 
 function FooterSection() {
@@ -767,28 +1086,24 @@ function ChatBot() {
 
 const ADMIN_PASSWORD = "portfolio2024";
 
-type AdminTab = "skills" | "projects" | "experience" | "education";
+type AdminTab = "skills" | "projects" | "experience" | "education" | "achievements" | "articles";
 
 function AdminPanel({
   onClose,
-  skills,
-  setSkills,
-  projects,
-  setProjects,
-  experience,
-  setExperience,
-  education,
-  setEducation,
+  skills, setSkills,
+  projects, setProjects,
+  experience, setExperience,
+  education, setEducation,
+  achievements, setAchievements,
+  articles, setArticles,
 }: {
   onClose: () => void;
-  skills: SkillGroup[];
-  setSkills: (v: SkillGroup[]) => void;
-  projects: Project[];
-  setProjects: (v: Project[]) => void;
-  experience: WorkExperience[];
-  setExperience: (v: WorkExperience[]) => void;
-  education: Education[];
-  setEducation: (v: Education[]) => void;
+  skills: SkillGroup[]; setSkills: (v: SkillGroup[]) => void;
+  projects: Project[]; setProjects: (v: Project[]) => void;
+  experience: WorkExperience[]; setExperience: (v: WorkExperience[]) => void;
+  education: Education[]; setEducation: (v: Education[]) => void;
+  achievements: Achievement[]; setAchievements: (v: Achievement[]) => void;
+  articles: Article[]; setArticles: (v: Article[]) => void;
 }) {
   const [tab, setTab] = useState<AdminTab>("skills");
 
@@ -797,6 +1112,8 @@ function AdminPanel({
     { id: "projects", label: "Projects", icon: <FolderOpen size={15} /> },
     { id: "experience", label: "Experience", icon: <Briefcase size={15} /> },
     { id: "education", label: "Education", icon: <GraduationCap size={15} /> },
+    { id: "achievements", label: "Awards", icon: <Trophy size={15} /> },
+    { id: "articles", label: "Articles", icon: <BookOpen size={15} /> },
   ];
 
   return (
@@ -843,6 +1160,8 @@ function AdminPanel({
           {tab === "projects" && <AdminProjects projects={projects} setProjects={setProjects} />}
           {tab === "experience" && <AdminExperience experience={experience} setExperience={setExperience} />}
           {tab === "education" && <AdminEducation education={education} setEducation={setEducation} />}
+          {tab === "achievements" && <AdminAchievements achievements={achievements} setAchievements={setAchievements} />}
+          {tab === "articles" && <AdminArticles articles={articles} setArticles={setArticles} />}
         </div>
       </div>
     </div>
@@ -1156,6 +1475,169 @@ function AdminEducation({ education, setEducation }: { education: Education[]; s
 
 // ─── Admin Login Gate ─────────────────────────────────────────────────────────
 
+// ── Admin: Achievements ───────────────────────────────────────────────────────
+
+function AdminAchievements({ achievements, setAchievements }: { achievements: Achievement[]; setAchievements: (v: Achievement[]) => void }) {
+  const blank = (): Achievement => ({ id: crypto.randomUUID(), title: "", issuer: "", date: "", type: "certificate", description: "", url: "", image: "" });
+  const [form, setForm] = useState<Achievement>(blank());
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const save = () => {
+    if (!form.title.trim()) return;
+    if (editingId) {
+      setAchievements(achievements.map((a) => a.id === editingId ? form : a));
+      setEditingId(null);
+    } else {
+      setAchievements([form, ...achievements]);
+    }
+    setForm(blank());
+  };
+
+  const startEdit = (a: Achievement) => { setForm(a); setEditingId(a.id); };
+  const remove = (id: string) => {
+    setAchievements(achievements.filter((a) => a.id !== id));
+    if (editingId === id) { setForm(blank()); setEditingId(null); }
+  };
+
+  return (
+    <div className="space-y-8">
+      <div className="border border-border p-5 space-y-4" style={{ borderRadius: "2px" }}>
+        <p className="font-mono text-xs tracking-widest text-primary uppercase">{editingId ? "Edit Entry" : "Add Achievement"}</p>
+        <div>
+          <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">Type</label>
+          <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value as Achievement["type"] })} className={inputCls} style={{ borderRadius: "2px" }}>
+            <option value="certificate">Certificate</option>
+            <option value="award">Award</option>
+            <option value="recognition">Recognition</option>
+          </select>
+        </div>
+        {(["title", "issuer", "date"] as const).map((key) => (
+          <div key={key}>
+            <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">{key}</label>
+            <input value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })} placeholder={key === "date" ? "Mar 2024" : key === "issuer" ? "Amazon Web Services" : "AWS Certified Solutions Architect"} className={inputCls} style={{ borderRadius: "2px" }} />
+          </div>
+        ))}
+        <div>
+          <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">Description</label>
+          <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Brief description..." rows={3} className={`${inputCls} resize-none`} style={{ borderRadius: "2px" }} />
+        </div>
+        <div>
+          <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">Credential URL (optional)</label>
+          <input value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} placeholder="https://..." className={inputCls} style={{ borderRadius: "2px" }} />
+        </div>
+        <div>
+          <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">Cover Image URL (optional)</label>
+          <input value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="https://images.unsplash.com/..." className={inputCls} style={{ borderRadius: "2px" }} />
+        </div>
+        <div className="flex gap-2 pt-2">
+          <button onClick={save} className="flex-1 bg-primary text-primary-foreground py-2.5 text-sm font-medium hover:bg-primary/80 transition-colors flex items-center justify-center gap-2" style={{ borderRadius: "2px" }}>
+            <Plus size={14} /> {editingId ? "Update" : "Add Entry"}
+          </button>
+          {editingId && <button onClick={() => { setForm(blank()); setEditingId(null); }} className="px-4 border border-border text-muted-foreground hover:text-foreground text-sm transition-colors" style={{ borderRadius: "2px" }}>Cancel</button>}
+        </div>
+      </div>
+      <div className="space-y-3">
+        <p className="font-mono text-xs tracking-widest text-muted-foreground uppercase">Current Achievements ({achievements.length})</p>
+        {achievements.map((a) => (
+          <div key={a.id} className="flex items-center justify-between gap-3 border border-border px-4 py-3 hover:border-primary/30 transition-colors" style={{ borderRadius: "2px" }}>
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-foreground truncate">{a.title}</p>
+              <p className="font-mono text-xs text-primary">{a.issuer} · {a.date}</p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button onClick={() => startEdit(a)} className="text-muted-foreground hover:text-primary transition-colors"><ChevronRight size={15} /></button>
+              <button onClick={() => remove(a.id)} className="text-muted-foreground hover:text-destructive transition-colors"><Trash2 size={14} /></button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Admin: Articles ───────────────────────────────────────────────────────────
+
+function AdminArticles({ articles, setArticles }: { articles: Article[]; setArticles: (v: Article[]) => void }) {
+  const blank = (): Article => ({ id: crypto.randomUUID(), title: "", publication: "", date: "", type: "publication", summary: "", url: "", image: "" });
+  const [form, setForm] = useState<Article>(blank());
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const save = () => {
+    if (!form.title.trim()) return;
+    if (editingId) {
+      setArticles(articles.map((a) => a.id === editingId ? form : a));
+      setEditingId(null);
+    } else {
+      setArticles([form, ...articles]);
+    }
+    setForm(blank());
+  };
+
+  const startEdit = (a: Article) => { setForm(a); setEditingId(a.id); };
+  const remove = (id: string) => {
+    setArticles(articles.filter((a) => a.id !== id));
+    if (editingId === id) { setForm(blank()); setEditingId(null); }
+  };
+
+  return (
+    <div className="space-y-8">
+      <div className="border border-border p-5 space-y-4" style={{ borderRadius: "2px" }}>
+        <p className="font-mono text-xs tracking-widest text-primary uppercase">{editingId ? "Edit Article" : "Add Article"}</p>
+        <div>
+          <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">Type</label>
+          <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value as Article["type"] })} className={inputCls} style={{ borderRadius: "2px" }}>
+            <option value="publication">Publication</option>
+            <option value="news">Press / News</option>
+            <option value="talk">Talk / Keynote</option>
+            <option value="blog">Blog Post</option>
+          </select>
+        </div>
+        {(["title", "publication", "date"] as const).map((key) => (
+          <div key={key}>
+            <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">{key === "publication" ? "Publication / Venue" : key}</label>
+            <input value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })} placeholder={key === "date" ? "Nov 2024" : key === "publication" ? "Stripe Engineering Blog" : "Article title..."} className={inputCls} style={{ borderRadius: "2px" }} />
+          </div>
+        ))}
+        <div>
+          <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">Summary</label>
+          <textarea value={form.summary} onChange={(e) => setForm({ ...form, summary: e.target.value })} placeholder="A brief summary of the article or talk..." rows={3} className={`${inputCls} resize-none`} style={{ borderRadius: "2px" }} />
+        </div>
+        <div>
+          <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">URL</label>
+          <input value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} placeholder="https://..." className={inputCls} style={{ borderRadius: "2px" }} />
+        </div>
+        <div>
+          <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">Cover Image URL (optional)</label>
+          <input value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="https://images.unsplash.com/..." className={inputCls} style={{ borderRadius: "2px" }} />
+        </div>
+        <div className="flex gap-2 pt-2">
+          <button onClick={save} className="flex-1 bg-primary text-primary-foreground py-2.5 text-sm font-medium hover:bg-primary/80 transition-colors flex items-center justify-center gap-2" style={{ borderRadius: "2px" }}>
+            <Plus size={14} /> {editingId ? "Update" : "Add Article"}
+          </button>
+          {editingId && <button onClick={() => { setForm(blank()); setEditingId(null); }} className="px-4 border border-border text-muted-foreground hover:text-foreground text-sm transition-colors" style={{ borderRadius: "2px" }}>Cancel</button>}
+        </div>
+      </div>
+      <div className="space-y-3">
+        <p className="font-mono text-xs tracking-widest text-muted-foreground uppercase">Current Articles ({articles.length})</p>
+        {articles.map((a) => (
+          <div key={a.id} className="flex items-center justify-between gap-3 border border-border px-4 py-3 hover:border-primary/30 transition-colors" style={{ borderRadius: "2px" }}>
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-foreground truncate">{a.title}</p>
+              <p className="font-mono text-xs text-muted-foreground">{a.publication} · {a.date}</p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button onClick={() => startEdit(a)} className="text-muted-foreground hover:text-primary transition-colors"><ChevronRight size={15} /></button>
+              <button onClick={() => remove(a.id)} className="text-muted-foreground hover:text-destructive transition-colors"><Trash2 size={14} /></button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Admin Login Gate ─────────────────────────────────────────────────────────
+
 function AdminLogin({ onSuccess, onClose }: { onSuccess: () => void; onClose: () => void }) {
   const [pw, setPw] = useState("");
   const [err, setErr] = useState(false);
@@ -1214,6 +1696,8 @@ export default function App() {
   const [projects, setProjectsRaw] = useState<Project[]>(() => loadFromStorage("ar_projects", DEFAULT_PROJECTS));
   const [experience, setExperienceRaw] = useState<WorkExperience[]>(() => loadFromStorage("ar_experience", DEFAULT_EXPERIENCE));
   const [education, setEducationRaw] = useState<Education[]>(() => loadFromStorage("ar_education", DEFAULT_EDUCATION));
+  const [achievements, setAchievementsRaw] = useState<Achievement[]>(() => loadFromStorage("ar_achievements", DEFAULT_ACHIEVEMENTS));
+  const [articles, setArticlesRaw] = useState<Article[]>(() => loadFromStorage("ar_articles", DEFAULT_ARTICLES));
 
   // Admin state
   const [adminState, setAdminState] = useState<"closed" | "login" | "open">("closed");
@@ -1228,6 +1712,8 @@ export default function App() {
   const setProjects = useCallback((v: Project[]) => { setProjectsRaw(v); saveToStorage("ar_projects", v); }, []);
   const setExperience = useCallback((v: WorkExperience[]) => { setExperienceRaw(v); saveToStorage("ar_experience", v); }, []);
   const setEducation = useCallback((v: Education[]) => { setEducationRaw(v); saveToStorage("ar_education", v); }, []);
+  const setAchievements = useCallback((v: Achievement[]) => { setAchievementsRaw(v); saveToStorage("ar_achievements", v); }, []);
+  const setArticles = useCallback((v: Article[]) => { setArticlesRaw(v); saveToStorage("ar_articles", v); }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -1241,6 +1727,7 @@ export default function App() {
       <ExperienceSection experience={experience} education={education} />
       <SkillsSection skills={skills} />
       <ProjectsSection projects={projects} />
+      <RecognitionsSection articles={articles} achievements={achievements} />
       <FooterSection />
       <ChatBot />
 
@@ -1256,14 +1743,12 @@ export default function App() {
       {adminState === "open" && (
         <AdminPanel
           onClose={() => setAdminState("closed")}
-          skills={skills}
-          setSkills={setSkills}
-          projects={projects}
-          setProjects={setProjects}
-          experience={experience}
-          setExperience={setExperience}
-          education={education}
-          setEducation={setEducation}
+          skills={skills} setSkills={setSkills}
+          projects={projects} setProjects={setProjects}
+          experience={experience} setExperience={setExperience}
+          education={education} setEducation={setEducation}
+          achievements={achievements} setAchievements={setAchievements}
+          articles={articles} setArticles={setArticles}
         />
       )}
 
