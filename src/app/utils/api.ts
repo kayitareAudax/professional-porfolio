@@ -1,31 +1,135 @@
-const BASE_URL = import.meta.env.VITE_API_URL || "";
+import axios from "axios";
+import type {
+  ApiSkillResponse,
+  ApiSkillRequest,
+  ApiCategoryResponse,
+  ApiCategoryRequest,
+  ApiProjectResponse,
+  ApiProjectRequest,
+  ApiExperienceResponse,
+  ApiExperienceRequest,
+  ApiEducationResponse,
+  ApiEducationRequest,
+  ApiLoginResponse,
+  ApiRegisterRequest,
+} from "../types/api";
 
-async function request<T>(method: string, path: string, body?: unknown): Promise<{ data: T }> {
+const api = axios.create({
+  baseURL: "https://professional-porfolio-backend.onrender.com",
+});
+
+// Attach auth token automatically
+api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
   if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
+    config.headers.Authorization = `Bearer ${token}`;
   }
+  return config;
+});
 
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined,
-  });
+// ─── Auth ────────────────────────────────────────────────────────────
 
-  const data = await res.json();
-  if (!res.ok) {
-    throw new Error(data?.message || `Request failed: ${res.status}`);
-  }
-
-  return { data };
+export async function login(username: string, password: string) {
+  const resp = await api.post<ApiLoginResponse>("/users/login", { username, password });
+  // expiresIn is epoch millis — store it as an ISO string
+  const expiresDate = new Date(resp.data.expiresIn);
+  localStorage.setItem("token", resp.data.token);
+  localStorage.setItem("token_expires", expiresDate.toISOString());
+  return resp;
 }
 
-export const api = {
-  get: <T>(path: string) => request<T>("GET", path),
-  post: <T>(path: string, body?: unknown) => request<T>("POST", path, body),
-  put: <T>(path: string, body?: unknown) => request<T>("PUT", path, body),
-  delete: <T>(path: string) => request<T>("DELETE", path),
-};
+export function register(data: ApiRegisterRequest) {
+  return api.post("/users/register", data);
+}
+
+// ─── Skills ──────────────────────────────────────────────────────────
+
+export function getSkills() {
+  return api.get<ApiSkillResponse[]>("/skills");
+}
+
+export function getSkillById(id: string) {
+  return api.get<ApiSkillResponse>(`/skills/${id}`);
+}
+
+export function createSkill(data: ApiSkillRequest) {
+  return api.post<ApiSkillResponse>("/skills", data);
+}
+
+export function deleteSkillById(id: string) {
+  return api.delete(`/skills/${id}`);
+}
+
+// ─── Categories ──────────────────────────────────────────────────────
+
+export function getCategories() {
+  return api.get<ApiCategoryResponse[]>("/categories");
+}
+
+export function getCategoryById(id: string) {
+  return api.get<ApiCategoryResponse>(`/categories/${id}`);
+}
+
+export function createCategory(data: ApiCategoryRequest) {
+  return api.post<ApiCategoryResponse>("/categories", data);
+}
+
+export function deleteCategoryById(id: string) {
+  return api.delete(`/categories/${id}`);
+}
+
+// ─── Projects ────────────────────────────────────────────────────────
+
+export function getProjects() {
+  return api.get<ApiProjectResponse[]>("/projects");
+}
+
+export function getProjectById(id: string) {
+  return api.get<ApiProjectResponse>(`/projects/${id}`);
+}
+
+export function createProject(data: ApiProjectRequest) {
+  return api.post<ApiProjectResponse>("/projects", data);
+}
+
+export function deleteProjectById(id: string) {
+  return api.delete(`/projects/${id}`);
+}
+
+// ─── Experiences ─────────────────────────────────────────────────────
+
+export function getExperiences() {
+  return api.get<ApiExperienceResponse[]>("/experiences");
+}
+
+export function getExperienceById(id: string) {
+  return api.get<ApiExperienceResponse>(`/experiences/${id}`);
+}
+
+export function createExperience(data: ApiExperienceRequest) {
+  return api.post<ApiExperienceResponse>("/experiences", data);
+}
+
+export function deleteExperienceById(id: string) {
+  return api.delete(`/experiences/${id}`);
+}
+
+// ─── Educations ──────────────────────────────────────────────────────
+
+export function getEducations() {
+  return api.get<ApiEducationResponse[]>("/educations");
+}
+
+export function getEducationById(id: string) {
+  return api.get<ApiEducationResponse>(`/educations/${id}`);
+}
+
+export function createEducation(data: ApiEducationRequest) {
+  return api.post<ApiEducationResponse>("/educations", data);
+}
+
+export function deleteEducation(id: string) {
+  return api.delete(`/educations/${id}`);
+}
+
+export default api;

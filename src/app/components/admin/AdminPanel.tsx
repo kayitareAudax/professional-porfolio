@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Code2, FolderOpen, Briefcase, GraduationCap, Trophy, BookOpen, Settings, ArrowLeft } from "lucide-react";
-import type { SkillGroup, Project, WorkExperience, Education, Achievement, Article, AdminTab } from "../../types";
+import type { SkillGroup, Project, WorkExperience, Education, Achievement, Article, FlatSkill, AdminTab } from "../../types";
 import { AdminSkills } from "./AdminSkills";
 import { AdminProjects } from "./AdminProjects";
 import { AdminExperience } from "./AdminExperience";
@@ -10,6 +10,7 @@ import { AdminArticles } from "./AdminArticles";
 
 export function AdminPanel({
   skills,
+  flatSkills,
   setSkills,
   projects,
   setProjects,
@@ -23,17 +24,15 @@ export function AdminPanel({
   setArticles,
 }: {
   skills: SkillGroup[];
-  setSkills: (v: SkillGroup[]) => void;
-  projects: Project[];
-  setProjects: (v: Project[]) => void;
-  experience: WorkExperience[];
-  setExperience: (v: WorkExperience[]) => void;
-  education: Education[];
-  setEducation: (v: Education[]) => void;
+  flatSkills: FlatSkill[];
+  setSkills: () => Promise<void>;
+  setProjects: () => Promise<void>;
+  setExperience: () => Promise<void>;
+  setEducation: () => Promise<void>;
   achievements: Achievement[];
-  setAchievements: (v: Achievement[]) => void;
+  setAchievements: () => void;
   articles: Article[];
-  setArticles: (v: Article[]) => void;
+  setArticles: () => void;
 }) {
   const [tab, setTab] = useState<AdminTab>("skills");
 
@@ -92,10 +91,10 @@ export function AdminPanel({
           <AdminSkills skills={skills} setSkills={setSkills} />
         )}
         {tab === "projects" && (
-          <AdminProjects projects={projects} setProjects={setProjects} />
+          <AdminProjects projects={projects} setProjects={setProjects} flatSkills={flatSkills} />
         )}
         {tab === "experience" && (
-          <AdminExperience experience={experience} setExperience={setExperience} />
+          <AdminExperience experience={experience} setExperience={setExperience} flatSkills={flatSkills} />
         )}
         {tab === "education" && (
           <AdminEducation education={education} setEducation={setEducation} />

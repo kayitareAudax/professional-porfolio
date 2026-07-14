@@ -1,17 +1,20 @@
 import { useState } from "react";
-import { Plus, Trash2, ChevronRight } from "lucide-react";
-import type { Project } from "../../types";
+import { Plus, Trash2, ChevronRight, X } from "lucide-react";
+import type { Project, FlatSkill } from "../../types";
 import { inputCls } from "../../data/constants";
+import { adminCreateProject, adminDeleteProject } from "../../services/portfolio";
 
 export function AdminProjects({
   projects,
   setProjects,
+  flatSkills,
 }: {
   projects: Project[];
-  setProjects: (v: Project[]) => void;
+  setProjects: () => Promise<void>;
+  flatSkills: FlatSkill[];
 }) {
   const blank = (): Project => ({
-    id: crypto.randomUUID(),
+    id: "",
     title: "",
     description: "",
     tags: [],
@@ -20,40 +23,50 @@ export function AdminProjects({
     image: "",
   });
   const [form, setForm] = useState<Project>(blank());
-  const [tagsInput, setTagsInput] = useState("");
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [selectedSkillIds, setSelectedSkillIds] = useState<string[]>([]);
+  const [busy, setBusy] = useState(false);
 
-  const save = () => {
-    if (!form.title.trim()) return;
-    const proj: Project = {
-      ...form,
-      tags: tagsInput
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean),
-    };
-    if (editingId) {
-      setProjects(projects.map((p) => (p.id === editingId ? proj : p)));
-      setEditingId(null);
-    } else {
-      setProjects([...projects, proj]);
-    }
-    setForm(blank());
-    setTagsInput("");
+  // Group flat skills by category for a nice dropdown
+  const skillsByCat = flatSkills.reduce<Record<string, FlatSkill[]>>((acc, s) => {
+    if (!acc[s.categoryName]) acc[s.categoryName] = [];
+    acc[s.categoryName].push(s);
+    return acc;
+  }, {});
+
+  const toggleSkill = (id: string) => {
+    setSelectedSkillIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
   };
 
-  const startEdit = (p: Project) => {
-    setForm(p);
-    setTagsInput(p.tags.join(", "));
-    setEditingId(p.id);
-  };
-
-  const remove = (id: string) => {
-    setProjects(projects.filter((p) => p.id !== id));
-    if (editingId === id) {
+  const save = async () => {
+    if (!form.title.trim() || busy) return;
+    setBusy(true);
+    try {
+      await adminCreateProject({
+        projectName: form.title.trim(),
+        projectDescription: form.description.trim(),
+        projectUrl: form.live || undefined,
+        githubUrl: form.github || undefined,
+        imageUrl: form.image || undefined,
+        skillIds: selectedSkillIds,
+      });
+      await setProjects();
       setForm(blank());
-      setTagsInput("");
-      setEditingId(null);
+      setSelectedSkillIds([]);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const remove = async (id: string) => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await adminDeleteProject(id);
+      await setProjects();
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -78,6 +91,8 @@ export function AdminProjects({
     </div>
   );
 
+  const selectedSkills = flatSkills.filter((s) => selectedSkillIds.includes(s.id));
+
   return (
     <div className="space-y-8">
       <div
@@ -85,7 +100,7 @@ export function AdminProjects({
         style={{ borderRadius: "2px" }}
       >
         <p className="font-mono text-xs tracking-widest text-primary uppercase">
-          {editingId ? "Edit Project" : "Add New Project"}
+          Add New Project
         </p>
         {field("Title", "title", "Lumen — Real-time Analytics Engine")}
         <div>
@@ -103,40 +118,58 @@ export function AdminProjects({
         </div>
         <div>
           <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">
-            Tags (comma separated)
+            Skills (select from registered skills)
           </label>
-          <input
-            value={tagsInput}
-            onChange={(e) => setTagsInput(e.target.value)}
-            placeholder="Go, React, PostgreSQL"
-            className={inputCls}
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            {selectedSkills.map((s) => (
+              <span
+                key={s.id}
+                className="flex items-center gap-1 text-xs bg-primary/10 text-primary border border-primary/20 px-2 py-0.5"
+                style={{ borderRadius: "2px" }}
+              >
+                {s.name}
+                <button onClick={() => toggleSkill(s.id)} className="hover:text-destructive">
+                  <X size={10} />
+                </button>
+              </span>
+            ))}
+          </div>
+          <select
+            multiple
+            value={selectedSkillIds}
+            onChange={(e) => {
+              const opts = Array.from(e.target.selectedOptions, (o) => o.value);
+              setSelectedSkillIds(opts);
+            }}
+            className={`${inputCls} h-32`}
             style={{ borderRadius: "2px" }}
-          />
+          >
+            {Object.entries(skillsByCat).map(([cat, skills]) => (
+              <optgroup key={cat} label={cat}>
+                {skills.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+          <p className="font-mono text-[9px] text-muted-foreground mt-1">
+            Hold Cmd/Ctrl to select multiple
+          </p>
         </div>
+        {field("Image URL", "image", "https://images.unsplash.com/...")}
         {field("GitHub URL", "github", "https://github.com/...")}
         {field("Live URL", "live", "https://...")}
-        {field("Image URL", "image", "https://images.unsplash.com/...")}
         <div className="flex gap-2 pt-2">
           <button
             onClick={save}
-            className="flex-1 bg-primary text-primary-foreground py-2.5 text-sm font-medium hover:bg-primary/80 transition-colors flex items-center justify-center gap-2"
+            disabled={busy}
+            className="flex-1 bg-primary text-primary-foreground py-2.5 text-sm font-medium hover:bg-primary/80 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
             style={{ borderRadius: "2px" }}
           >
-            <Plus size={14} /> {editingId ? "Update Project" : "Add Project"}
+            <Plus size={14} /> Add Project
           </button>
-          {editingId && (
-            <button
-              onClick={() => {
-                setForm(blank());
-                setTagsInput("");
-                setEditingId(null);
-              }}
-              className="px-4 border border-border text-muted-foreground hover:text-foreground text-sm transition-colors"
-              style={{ borderRadius: "2px" }}
-            >
-              Cancel
-            </button>
-          )}
         </div>
       </div>
 
@@ -166,12 +199,6 @@ export function AdminProjects({
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <button
-                onClick={() => startEdit(p)}
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                <ChevronRight size={15} />
-              </button>
               <button
                 onClick={() => remove(p.id)}
                 className="text-muted-foreground hover:text-destructive transition-colors"

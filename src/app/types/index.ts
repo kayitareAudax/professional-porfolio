@@ -61,3 +61,9 @@ export type AdminTab =
   | "articles";
 
 export type ChatMsg = { role: "user" | "bot"; text: string };
+
+export interface FlatSkill {
+  id: string;
+  name: string;
+  categoryName: string;
+}

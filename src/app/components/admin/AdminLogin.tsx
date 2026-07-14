@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Lock, UserCheck } from "lucide-react";
 import { inputCls } from "../../data/constants";
-import { api } from "../../utils/api";
+import { login } from "../../utils/api";
 
 export function AdminLogin({
   onSuccess,
@@ -18,12 +18,7 @@ export function AdminLogin({
     setLoading(true);
     setErr(false);
     try {
-      const resp = await api.post<{ token: string; expiresIn: string }>("/users/login", {
-        username,
-        password: pw,
-      });
-      localStorage.setItem("token", resp.data.token);
-      localStorage.setItem("token_expires", resp.data.expiresIn);
+      await login(username, pw);
       onSuccess();
     } catch {
       setErr(true);

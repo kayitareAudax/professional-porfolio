@@ -1,59 +1,77 @@
 import { useState } from "react";
-import { Plus, Trash2, ChevronRight } from "lucide-react";
-import type { WorkExperience } from "../../types";
+import { Plus, Trash2, ChevronRight, X } from "lucide-react";
+import type { WorkExperience, FlatSkill } from "../../types";
 import { inputCls } from "../../data/constants";
+import { adminCreateExperience, adminDeleteExperience } from "../../services/portfolio";
 
 export function AdminExperience({
   experience,
   setExperience,
+  flatSkills,
 }: {
   experience: WorkExperience[];
-  setExperience: (v: WorkExperience[]) => void;
+  setExperience: () => Promise<void>;
+  flatSkills: FlatSkill[];
 }) {
-  const blank = (): WorkExperience => ({
-    id: crypto.randomUUID(),
+  const blank = () => ({
+    id: "",
     role: "",
     company: "",
     period: "",
     description: "",
     tags: [],
+    startDate: "",
+    endDate: "",
+    isCurrent: false,
   });
-  const [form, setForm] = useState<WorkExperience>(blank());
-  const [tagsInput, setTagsInput] = useState("");
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState(blank());
+  const [selectedSkillIds, setSelectedSkillIds] = useState<string[]>([]);
+  const [busy, setBusy] = useState(false);
 
-  const save = () => {
-    if (!form.role.trim()) return;
-    const item: WorkExperience = {
-      ...form,
-      tags: tagsInput
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean),
-    };
-    if (editingId) {
-      setExperience(experience.map((e) => (e.id === editingId ? item : e)));
-      setEditingId(null);
-    } else {
-      setExperience([item, ...experience]);
-    }
-    setForm(blank());
-    setTagsInput("");
+  const skillsByCat = flatSkills.reduce<Record<string, FlatSkill[]>>((acc, s) => {
+    if (!acc[s.categoryName]) acc[s.categoryName] = [];
+    acc[s.categoryName].push(s);
+    return acc;
+  }, {});
+
+  const toggleSkill = (id: string) => {
+    setSelectedSkillIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
   };
 
-  const startEdit = (e: WorkExperience) => {
-    setForm(e);
-    setTagsInput(e.tags.join(", "));
-    setEditingId(e.id);
-  };
-  const remove = (id: string) => {
-    setExperience(experience.filter((e) => e.id !== id));
-    if (editingId === id) {
+  const save = async () => {
+    if (!form.role.trim() || busy) return;
+    setBusy(true);
+    try {
+      await adminCreateExperience({
+        role: form.role.trim(),
+        description: form.description.trim(),
+        companyName: form.company.trim(),
+        startDate: form.startDate || new Date().toISOString(),
+        endDate: form.isCurrent ? undefined : form.endDate || undefined,
+        skillIds: selectedSkillIds,
+      });
+      await setExperience();
       setForm(blank());
-      setTagsInput("");
-      setEditingId(null);
+      setSelectedSkillIds([]);
+    } finally {
+      setBusy(false);
     }
   };
+
+  const remove = async (id: string) => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await adminDeleteExperience(id);
+      await setExperience();
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const selectedSkills = flatSkills.filter((s) => selectedSkillIds.includes(s.id));
 
   return (
     <div className="space-y-8">
@@ -62,28 +80,70 @@ export function AdminExperience({
         style={{ borderRadius: "2px" }}
       >
         <p className="font-mono text-xs tracking-widest text-primary uppercase">
-          {editingId ? "Edit Entry" : "Add Work Experience"}
+          Add Work Experience
         </p>
-        {(["role", "company", "period"] as const).map((key) => (
-          <div key={key}>
+        <div>
+          <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">
+            Role
+          </label>
+          <input
+            value={form.role}
+            onChange={(e) => setForm({ ...form, role: e.target.value })}
+            placeholder="Senior Software Engineer"
+            className={inputCls}
+            style={{ borderRadius: "2px" }}
+          />
+        </div>
+        <div>
+          <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">
+            Company
+          </label>
+          <input
+            value={form.company}
+            onChange={(e) => setForm({ ...form, company: e.target.value })}
+            placeholder="Stripe"
+            className={inputCls}
+            style={{ borderRadius: "2px" }}
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
             <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">
-              {key}
+              Start Date
             </label>
             <input
-              value={form[key]}
-              onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-              placeholder={
-                key === "period"
-                  ? "2023 – Present"
-                  : key === "company"
-                    ? "Stripe"
-                    : "Senior Software Engineer"
-              }
+              type="date"
+              value={form.startDate}
+              onChange={(e) => setForm({ ...form, startDate: e.target.value })}
               className={inputCls}
               style={{ borderRadius: "2px" }}
             />
           </div>
-        ))}
+          <div>
+            <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">
+              End Date
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                type="date"
+                value={form.endDate}
+                onChange={(e) => setForm({ ...form, endDate: e.target.value })}
+                disabled={form.isCurrent}
+                className={inputCls}
+                style={{ borderRadius: "2px", opacity: form.isCurrent ? 0.4 : 1 }}
+              />
+            </div>
+            <label className="flex items-center gap-2 mt-1.5 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.isCurrent}
+                onChange={(e) => setForm({ ...form, isCurrent: e.target.checked, endDate: e.target.checked ? "" : form.endDate })}
+                className="accent-primary"
+              />
+              <span className="font-mono text-[10px] text-muted-foreground">Currently here (Present)</span>
+            </label>
+          </div>
+        </div>
         <div>
           <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">
             Description
@@ -99,37 +159,55 @@ export function AdminExperience({
         </div>
         <div>
           <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">
-            Tags (comma separated)
+            Skills (select from registered skills)
           </label>
-          <input
-            value={tagsInput}
-            onChange={(e) => setTagsInput(e.target.value)}
-            placeholder="Go, Kubernetes, PostgreSQL"
-            className={inputCls}
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            {selectedSkills.map((s) => (
+              <span
+                key={s.id}
+                className="flex items-center gap-1 text-xs bg-primary/10 text-primary border border-primary/20 px-2 py-0.5"
+                style={{ borderRadius: "2px" }}
+              >
+                {s.name}
+                <button onClick={() => toggleSkill(s.id)} className="hover:text-destructive">
+                  <X size={10} />
+                </button>
+              </span>
+            ))}
+          </div>
+          <select
+            multiple
+            value={selectedSkillIds}
+            onChange={(e) => {
+              const opts = Array.from(e.target.selectedOptions, (o) => o.value);
+              setSelectedSkillIds(opts);
+            }}
+            className={`${inputCls} h-32`}
             style={{ borderRadius: "2px" }}
-          />
+          >
+            {Object.entries(skillsByCat).map(([cat, skills]) => (
+              <optgroup key={cat} label={cat}>
+                {skills.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+          <p className="font-mono text-[9px] text-muted-foreground mt-1">
+            Hold Cmd/Ctrl to select multiple
+          </p>
         </div>
         <div className="flex gap-2 pt-2">
           <button
             onClick={save}
-            className="flex-1 bg-primary text-primary-foreground py-2.5 text-sm font-medium hover:bg-primary/80 transition-colors flex items-center justify-center gap-2"
+            disabled={busy}
+            className="flex-1 bg-primary text-primary-foreground py-2.5 text-sm font-medium hover:bg-primary/80 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
             style={{ borderRadius: "2px" }}
           >
-            <Plus size={14} /> {editingId ? "Update" : "Add Entry"}
+            <Plus size={14} /> Add Entry
           </button>
-          {editingId && (
-            <button
-              onClick={() => {
-                setForm(blank());
-                setTagsInput("");
-                setEditingId(null);
-              }}
-              className="px-4 border border-border text-muted-foreground hover:text-foreground text-sm transition-colors"
-              style={{ borderRadius: "2px" }}
-            >
-              Cancel
-            </button>
-          )}
         </div>
       </div>
 
@@ -152,12 +230,6 @@ export function AdminExperience({
               </p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <button
-                onClick={() => startEdit(e)}
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                <ChevronRight size={15} />
-              </button>
               <button
                 onClick={() => remove(e.id)}
                 className="text-muted-foreground hover:text-destructive transition-colors"

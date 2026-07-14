@@ -2,44 +2,53 @@ import { useState } from "react";
 import { Plus, Trash2, ChevronRight } from "lucide-react";
 import type { Education } from "../../types";
 import { inputCls } from "../../data/constants";
+import { adminCreateEducation, adminDeleteEducation } from "../../services/portfolio";
 
 export function AdminEducation({
   education,
   setEducation,
 }: {
   education: Education[];
-  setEducation: (v: Education[]) => void;
+  setEducation: () => Promise<void>;
 }) {
-  const blank = (): Education => ({
-    id: crypto.randomUUID(),
+  const blank = () => ({
+    id: "",
     degree: "",
     institution: "",
     period: "",
     description: "",
+    startDate: "",
+    endDate: "",
+    isCurrent: false,
   });
-  const [form, setForm] = useState<Education>(blank());
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState(blank());
+  const [busy, setBusy] = useState(false);
 
-  const save = () => {
-    if (!form.degree.trim()) return;
-    if (editingId) {
-      setEducation(education.map((e) => (e.id === editingId ? form : e)));
-      setEditingId(null);
-    } else {
-      setEducation([form, ...education]);
-    }
-    setForm(blank());
-  };
-
-  const startEdit = (e: Education) => {
-    setForm(e);
-    setEditingId(e.id);
-  };
-  const remove = (id: string) => {
-    setEducation(education.filter((e) => e.id !== id));
-    if (editingId === id) {
+  const save = async () => {
+    if (!form.degree.trim() || busy) return;
+    setBusy(true);
+    try {
+      await adminCreateEducation({
+        name: form.degree.trim(),
+        description: form.description.trim(),
+        startDate: form.startDate || new Date().toISOString(),
+        endDate: form.isCurrent ? undefined : form.endDate || undefined,
+      });
+      await setEducation();
       setForm(blank());
-      setEditingId(null);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const remove = async (id: string) => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await adminDeleteEducation(id);
+      await setEducation();
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -50,28 +59,70 @@ export function AdminEducation({
         style={{ borderRadius: "2px" }}
       >
         <p className="font-mono text-xs tracking-widest text-primary uppercase">
-          {editingId ? "Edit Entry" : "Add Education"}
+          Add Education
         </p>
-        {(["degree", "institution", "period"] as const).map((key) => (
-          <div key={key}>
+        <div>
+          <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">
+            Degree
+          </label>
+          <input
+            value={form.degree}
+            onChange={(e) => setForm({ ...form, degree: e.target.value })}
+            placeholder="B.Sc. Computer Science"
+            className={inputCls}
+            style={{ borderRadius: "2px" }}
+          />
+        </div>
+        <div>
+          <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">
+            Institution
+          </label>
+          <input
+            value={form.institution}
+            onChange={(e) => setForm({ ...form, institution: e.target.value })}
+            placeholder="MIT"
+            className={inputCls}
+            style={{ borderRadius: "2px" }}
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
             <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">
-              {key}
+              Start Date
             </label>
             <input
-              value={form[key]}
-              onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-              placeholder={
-                key === "period"
-                  ? "2016 – 2020"
-                  : key === "institution"
-                    ? "MIT"
-                    : "B.Sc. Computer Science"
-              }
+              type="date"
+              value={form.startDate}
+              onChange={(e) => setForm({ ...form, startDate: e.target.value })}
               className={inputCls}
               style={{ borderRadius: "2px" }}
             />
           </div>
-        ))}
+          <div>
+            <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">
+              End Date
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                type="date"
+                value={form.endDate}
+                onChange={(e) => setForm({ ...form, endDate: e.target.value })}
+                disabled={form.isCurrent}
+                className={inputCls}
+                style={{ borderRadius: "2px", opacity: form.isCurrent ? 0.4 : 1 }}
+              />
+            </div>
+            <label className="flex items-center gap-2 mt-1.5 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.isCurrent}
+                onChange={(e) => setForm({ ...form, isCurrent: e.target.checked, endDate: e.target.checked ? "" : form.endDate })}
+                className="accent-primary"
+              />
+              <span className="font-mono text-[10px] text-muted-foreground">Currently enrolled (Present)</span>
+            </label>
+          </div>
+        </div>
         <div>
           <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">
             Description
@@ -88,23 +139,12 @@ export function AdminEducation({
         <div className="flex gap-2 pt-2">
           <button
             onClick={save}
-            className="flex-1 bg-primary text-primary-foreground py-2.5 text-sm font-medium hover:bg-primary/80 transition-colors flex items-center justify-center gap-2"
+            disabled={busy}
+            className="flex-1 bg-primary text-primary-foreground py-2.5 text-sm font-medium hover:bg-primary/80 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
             style={{ borderRadius: "2px" }}
           >
-            <Plus size={14} /> {editingId ? "Update" : "Add Entry"}
+            <Plus size={14} /> Add Entry
           </button>
-          {editingId && (
-            <button
-              onClick={() => {
-                setForm(blank());
-                setEditingId(null);
-              }}
-              className="px-4 border border-border text-muted-foreground hover:text-foreground text-sm transition-colors"
-              style={{ borderRadius: "2px" }}
-            >
-              Cancel
-            </button>
-          )}
         </div>
       </div>
 
@@ -127,12 +167,6 @@ export function AdminEducation({
               </p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <button
-                onClick={() => startEdit(e)}
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                <ChevronRight size={15} />
-              </button>
               <button
                 onClick={() => remove(e.id)}
                 className="text-muted-foreground hover:text-destructive transition-colors"
