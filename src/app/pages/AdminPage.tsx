@@ -3,7 +3,15 @@ import type { SkillGroup, Project, WorkExperience, Education, Achievement, Artic
 import type { AdminTab } from "../types";
 import { AdminLogin } from "../components/admin/AdminLogin";
 import { AdminPanel } from "../components/admin/AdminPanel";
-import { adminLoadSkills, adminLoadProjects, adminLoadExperiences, adminLoadEducations, adminLoadFlatSkills } from "../services/portfolio";
+import {
+  adminLoadSkills,
+  adminLoadProjects,
+  adminLoadExperiences,
+  adminLoadEducations,
+  adminLoadFlatSkills,
+  adminLoadAchievements,
+  adminLoadArticles,
+} from "../services/portfolio";
 
 export function AdminPage() {
   const [loggedIn, setLoggedIn] = useState(() => {
@@ -23,8 +31,8 @@ export function AdminPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [experience, setExperience] = useState<WorkExperience[]>([]);
   const [education, setEducation] = useState<Education[]>([]);
-  const [achievements] = useState<Achievement[]>([]);
-  const [articles] = useState<Article[]>([]);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [articles, setArticles] = useState<Article[]>([]);
   const [dataLoaded, setDataLoaded] = useState(false);
 
   useEffect(() => {
@@ -37,18 +45,22 @@ export function AdminPage() {
     if (!loggedIn) return;
     async function load() {
       try {
-        const [s, fs, p, e, ed] = await Promise.all([
+        const [s, fs, p, e, ed, aw, ar] = await Promise.all([
           adminLoadSkills(),
           adminLoadFlatSkills(),
           adminLoadProjects(),
           adminLoadExperiences(),
           adminLoadEducations(),
+          adminLoadAchievements(),
+          adminLoadArticles(),
         ]);
         setSkills(s);
         setFlatSkills(fs);
         setProjects(p);
         setExperience(e);
         setEducation(ed);
+        setAchievements(aw);
+        setArticles(ar);
       } catch (err) {
         console.error("Failed to load admin data", err);
       } finally {
@@ -75,6 +87,14 @@ export function AdminPage() {
     const ed = await adminLoadEducations();
     setEducation(ed);
   }, []);
+  const refreshAchievements = useCallback(async () => {
+    const aw = await adminLoadAchievements();
+    setAchievements(aw);
+  }, []);
+  const refreshArticles = useCallback(async () => {
+    const ar = await adminLoadArticles();
+    setArticles(ar);
+  }, []);
 
   if (!loggedIn) {
     return <AdminLogin onSuccess={() => setLoggedIn(true)} />;
@@ -100,9 +120,9 @@ export function AdminPage() {
       education={education}
       setEducation={refreshEducation}
       achievements={achievements}
-      setAchievements={() => {}}
+      setAchievements={refreshAchievements}
       articles={articles}
-      setArticles={() => {}}
+      setArticles={refreshArticles}
     />
   );
 }

@@ -1,10 +1,12 @@
-import type { SkillGroup, Project, WorkExperience, Education } from "../types";
+import type { SkillGroup, Project, WorkExperience, Education, Achievement, Article } from "../types";
 import type {
   ApiSkillResponse,
   ApiCategoryResponse,
   ApiProjectResponse,
   ApiExperienceResponse,
   ApiEducationResponse,
+  ApiAwardResponse,
+  ApiPaperResponse,
 } from "../types/api";
 import {
   getSkills,
@@ -22,6 +24,13 @@ import {
   getEducations,
   createEducation,
   deleteEducation,
+  getAwards,
+  createAward,
+  deleteAwardById,
+  getPapers,
+  createPaper,
+  deletePaperById,
+  uploadImage,
 } from "../utils/api";
 
 // ─── Mappers ─────────────────────────────────────────────────────────
@@ -71,6 +80,32 @@ function mapEducation(e: ApiEducationResponse): Education {
   };
 }
 
+function mapAward(a: ApiAwardResponse): Achievement {
+  return {
+    id: a.id,
+    title: a.title,
+    issuer: a.issuer,
+    date: a.date,
+    type: a.type,
+    description: a.description,
+    url: a.url ?? "",
+    image: a.imageUrl ?? "",
+  };
+}
+
+function mapPaper(p: ApiPaperResponse): Article {
+  return {
+    id: p.id,
+    title: p.title,
+    publication: p.publication,
+    date: p.date,
+    type: p.type,
+    summary: p.summary,
+    url: p.url ?? "",
+    image: p.imageUrl ?? "",
+  };
+}
+
 function formatPeriod(start: string, end?: string): string {
   const s = new Date(start).getFullYear();
   if (!end) return `${s} – Present`;
@@ -98,6 +133,16 @@ export async function loadPublicExperience(): Promise<WorkExperience[]> {
 export async function loadPublicEducation(): Promise<Education[]> {
   const res = await getEducations();
   return res.data.map(mapEducation);
+}
+
+export async function loadPublicAchievements(): Promise<Achievement[]> {
+  const res = await getAwards();
+  return res.data.map(mapAward);
+}
+
+export async function loadPublicArticles(): Promise<Article[]> {
+  const res = await getPapers();
+  return res.data.map(mapPaper);
 }
 
 export interface FlatSkill {
@@ -217,4 +262,57 @@ export async function adminCreateEducation(data: {
 
 export async function adminDeleteEducation(id: string) {
   await deleteEducation(id);
+}
+
+// ─── Admin: Achievements (Awards) ─────────────────────────────────────
+
+export async function adminLoadAchievements(): Promise<Achievement[]> {
+  const res = await getAwards();
+  return res.data.map(mapAward);
+}
+
+export async function adminCreateAchievement(data: {
+  title: string;
+  issuer: string;
+  date: string;
+  type: Achievement["type"];
+  description: string;
+  url?: string;
+  imageUrl?: string;
+}) {
+  await createAward(data);
+}
+
+export async function adminDeleteAchievement(id: string) {
+  await deleteAwardById(id);
+}
+
+// ─── Admin: Articles (Papers) ─────────────────────────────────────────
+
+export async function adminLoadArticles(): Promise<Article[]> {
+  const res = await getPapers();
+  return res.data.map(mapPaper);
+}
+
+export async function adminCreateArticle(data: {
+  title: string;
+  publication: string;
+  date: string;
+  type: Article["type"];
+  summary: string;
+  url?: string;
+  imageUrl?: string;
+}) {
+  await createPaper(data);
+}
+
+export async function adminDeleteArticle(id: string) {
+  await deletePaperById(id);
+}
+
+// ─── Admin: Image upload ───────────────────────────────────────────────
+
+export async function adminUploadImage(file: File): Promise<string> {
+  const res = await uploadImage(file);
+  return res.data.url;
 }

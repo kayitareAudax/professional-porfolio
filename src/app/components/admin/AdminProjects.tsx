@@ -3,6 +3,7 @@ import { Plus, Trash2, ChevronRight, X } from "lucide-react";
 import type { Project, FlatSkill } from "../../types";
 import { inputCls } from "../../data/constants";
 import { adminCreateProject, adminDeleteProject } from "../../services/portfolio";
+import { ImageUploadField } from "./ImageUploadField";
 
 export function AdminProjects({
   projects,
@@ -134,31 +135,47 @@ export function AdminProjects({
               </span>
             ))}
           </div>
-          <select
-            multiple
-            value={selectedSkillIds}
-            onChange={(e) => {
-              const opts = Array.from(e.target.selectedOptions, (o) => o.value);
-              setSelectedSkillIds(opts);
-            }}
-            className={`${inputCls} h-32`}
+          <div
+            className="space-y-3 max-h-56 overflow-y-auto border border-border p-3"
             style={{ borderRadius: "2px" }}
           >
             {Object.entries(skillsByCat).map(([cat, skills]) => (
-              <optgroup key={cat} label={cat}>
-                {skills.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
-              </optgroup>
+              <div key={cat}>
+                <p className="font-mono text-[9px] tracking-widest text-muted-foreground uppercase mb-1.5">
+                  {cat}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {skills.map((s) => {
+                    const active = selectedSkillIds.includes(s.id);
+                    return (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => toggleSkill(s.id)}
+                        className={`text-xs px-2 py-1 border transition-colors ${
+                          active
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                        }`}
+                        style={{ borderRadius: "2px" }}
+                      >
+                        {s.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             ))}
-          </select>
+          </div>
           <p className="font-mono text-[9px] text-muted-foreground mt-1">
-            Hold Cmd/Ctrl to select multiple
+            Click to select or deselect a skill — pick as many as apply
           </p>
         </div>
-        {field("Image URL", "image", "https://images.unsplash.com/...")}
+        <ImageUploadField
+          label="Project Image"
+          value={form.image}
+          onChange={(url) => setForm({ ...form, image: url })}
+        />
         {field("GitHub URL", "github", "https://github.com/...")}
         {field("Live URL", "live", "https://...")}
         <div className="flex gap-2 pt-2">

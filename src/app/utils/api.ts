@@ -12,6 +12,11 @@ import type {
   ApiEducationRequest,
   ApiLoginResponse,
   ApiRegisterRequest,
+  ApiAwardResponse,
+  ApiAwardRequest,
+  ApiPaperResponse,
+  ApiPaperRequest,
+  ApiUploadResponse,
 } from "../types/api";
 
 const api = axios.create({
@@ -130,6 +135,52 @@ export function createEducation(data: ApiEducationRequest) {
 
 export function deleteEducation(id: string) {
   return api.delete(`/educations/${id}`);
+}
+
+// ─── Awards ──────────────────────────────────────────────────────────
+
+export function getAwards() {
+  return api.get<ApiAwardResponse[]>("/awards");
+}
+
+export function getAwardById(id: string) {
+  return api.get<ApiAwardResponse>(`/awards/${id}`);
+}
+
+export function createAward(data: ApiAwardRequest) {
+  return api.post<ApiAwardResponse>("/awards", data);
+}
+
+export function deleteAwardById(id: string) {
+  return api.delete(`/awards/${id}`);
+}
+
+// ─── Papers ──────────────────────────────────────────────────────────
+
+export function getPapers() {
+  return api.get<ApiPaperResponse[]>("/papers");
+}
+
+export function getPaperById(id: string) {
+  return api.get<ApiPaperResponse>(`/papers/${id}`);
+}
+
+export function createPaper(data: ApiPaperRequest) {
+  return api.post<ApiPaperResponse>("/papers", data);
+}
+
+export function deletePaperById(id: string) {
+  return api.delete(`/papers/${id}`);
+}
+
+// ─── Uploads ─────────────────────────────────────────────────────────
+
+export function uploadImage(file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+  return api.post<ApiUploadResponse>("/uploads/image", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
 }
 
 export default api;

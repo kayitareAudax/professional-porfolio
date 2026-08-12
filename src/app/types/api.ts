@@ -98,3 +98,49 @@ export interface ApiRegisterRequest {
   username: string;
   password: string;
 }
+
+export interface ApiAwardRequest {
+  title: string;
+  issuer: string;
+  date: string;
+  type: "certificate" | "award" | "recognition";
+  description: string;
+  url?: string;
+  imageUrl?: string;
+}
+
+export interface ApiAwardResponse {
+  id: string;
+  title: string;
+  issuer: string;
+  date: string;
+  type: "certificate" | "award" | "recognition";
+  description: string;
+  url?: string;
+  imageUrl?: string;
+}
+
+export interface ApiPaperRequest {
+  title: string;
+  publication: string;
+  date: string;
+  type: "publication" | "news" | "talk" | "blog";
+  summary: string;
+  url?: string;
+  imageUrl?: string;
+}
+
+export interface ApiPaperResponse {
+  id: string;
+  title: string;
+  publication: string;
+  date: string;
+  type: "publication" | "news" | "talk" | "blog";
+  summary: string;
+  url?: string;
+  imageUrl?: string;
+}
+
+export interface ApiUploadResponse {
+  url: string;
+}

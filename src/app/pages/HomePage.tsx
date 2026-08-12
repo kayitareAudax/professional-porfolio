@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
 import type { SkillGroup, Project, WorkExperience, Education, Achievement, Article } from "../types";
-import { loadPublicSkills, loadPublicProjects, loadPublicExperience, loadPublicEducation } from "../services/portfolio";
+import {
+  loadPublicSkills,
+  loadPublicProjects,
+  loadPublicExperience,
+  loadPublicEducation,
+  loadPublicAchievements,
+  loadPublicArticles,
+} from "../services/portfolio";
 import { NavBar } from "../components/layout/NavBar";
 import { FooterSection } from "../components/layout/FooterSection";
 import { HeroSection } from "../components/sections/HeroSection";
@@ -12,13 +19,13 @@ import { RecognitionsSection } from "../components/sections/RecognitionsSection"
 import { ChatBot } from "../components/chatbot/ChatBot";
 
 export function HomePage() {
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
   const [skills, setSkills] = useState<SkillGroup[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [experience, setExperience] = useState<WorkExperience[]>([]);
   const [education, setEducation] = useState<Education[]>([]);
-  const [achievements] = useState<Achievement[]>([]);
-  const [articles] = useState<Article[]>([]);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,16 +35,20 @@ export function HomePage() {
   useEffect(() => {
     async function load() {
       try {
-        const [s, p, e, ed] = await Promise.all([
+        const [s, p, e, ed, aw, ar] = await Promise.all([
           loadPublicSkills(),
           loadPublicProjects(),
           loadPublicExperience(),
           loadPublicEducation(),
+          loadPublicAchievements(),
+          loadPublicArticles(),
         ]);
         setSkills(s);
         setProjects(p);
         setExperience(e);
         setEducation(ed);
+        setAchievements(aw);
+        setArticles(ar);
       } catch (err) {
         console.error("Failed to load portfolio data", err);
       } finally {

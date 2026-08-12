@@ -30,9 +30,9 @@ export function AdminPanel({
   setExperience: () => Promise<void>;
   setEducation: () => Promise<void>;
   achievements: Achievement[];
-  setAchievements: () => void;
+  setAchievements: () => Promise<void>;
   articles: Article[];
-  setArticles: () => void;
+  setArticles: () => Promise<void>;
 }) {
   const [tab, setTab] = useState<AdminTab>("skills");
 

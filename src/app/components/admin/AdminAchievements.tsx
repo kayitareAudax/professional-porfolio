@@ -1,17 +1,19 @@
 import { useState } from "react";
-import { Plus, Trash2, ChevronRight } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import type { Achievement } from "../../types";
 import { inputCls } from "../../data/constants";
+import { adminCreateAchievement, adminDeleteAchievement } from "../../services/portfolio";
+import { ImageUploadField } from "./ImageUploadField";
 
 export function AdminAchievements({
   achievements,
   setAchievements,
 }: {
   achievements: Achievement[];
-  setAchievements: (v: Achievement[]) => void;
+  setAchievements: () => Promise<void>;
 }) {
   const blank = (): Achievement => ({
-    id: crypto.randomUUID(),
+    id: "",
     title: "",
     issuer: "",
     date: "",
@@ -21,28 +23,36 @@ export function AdminAchievements({
     image: "",
   });
   const [form, setForm] = useState<Achievement>(blank());
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
-  const save = () => {
-    if (!form.title.trim()) return;
-    if (editingId) {
-      setAchievements(achievements.map((a) => (a.id === editingId ? form : a)));
-      setEditingId(null);
-    } else {
-      setAchievements([form, ...achievements]);
-    }
-    setForm(blank());
-  };
-
-  const startEdit = (a: Achievement) => {
-    setForm(a);
-    setEditingId(a.id);
-  };
-  const remove = (id: string) => {
-    setAchievements(achievements.filter((a) => a.id !== id));
-    if (editingId === id) {
+  const save = async () => {
+    if (!form.title.trim() || busy) return;
+    setBusy(true);
+    try {
+      await adminCreateAchievement({
+        title: form.title.trim(),
+        issuer: form.issuer.trim(),
+        date: form.date.trim(),
+        type: form.type,
+        description: form.description.trim(),
+        url: form.url || undefined,
+        imageUrl: form.image || undefined,
+      });
+      await setAchievements();
       setForm(blank());
-      setEditingId(null);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const remove = async (id: string) => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await adminDeleteAchievement(id);
+      await setAchievements();
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -53,7 +63,7 @@ export function AdminAchievements({
         style={{ borderRadius: "2px" }}
       >
         <p className="font-mono text-xs tracking-widest text-primary uppercase">
-          {editingId ? "Edit Entry" : "Add Achievement"}
+          Add Achievement
         </p>
         <div>
           <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">
@@ -117,38 +127,20 @@ export function AdminAchievements({
             style={{ borderRadius: "2px" }}
           />
         </div>
-        <div>
-          <label className="block font-mono text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5">
-            Cover Image URL (optional)
-          </label>
-          <input
-            value={form.image}
-            onChange={(e) => setForm({ ...form, image: e.target.value })}
-            placeholder="https://images.unsplash.com/..."
-            className={inputCls}
-            style={{ borderRadius: "2px" }}
-          />
-        </div>
+        <ImageUploadField
+          label="Cover Image (optional)"
+          value={form.image}
+          onChange={(url) => setForm({ ...form, image: url })}
+        />
         <div className="flex gap-2 pt-2">
           <button
             onClick={save}
-            className="flex-1 bg-primary text-primary-foreground py-2.5 text-sm font-medium hover:bg-primary/80 transition-colors flex items-center justify-center gap-2"
+            disabled={busy}
+            className="flex-1 bg-primary text-primary-foreground py-2.5 text-sm font-medium hover:bg-primary/80 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
             style={{ borderRadius: "2px" }}
           >
-            <Plus size={14} /> {editingId ? "Update" : "Add Entry"}
+            <Plus size={14} /> Add Entry
           </button>
-          {editingId && (
-            <button
-              onClick={() => {
-                setForm(blank());
-                setEditingId(null);
-              }}
-              className="px-4 border border-border text-muted-foreground hover:text-foreground text-sm transition-colors"
-              style={{ borderRadius: "2px" }}
-            >
-              Cancel
-            </button>
-          )}
         </div>
       </div>
       <div className="space-y-3">
@@ -170,12 +162,6 @@ export function AdminAchievements({
               </p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <button
-                onClick={() => startEdit(a)}
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                <ChevronRight size={15} />
-              </button>
               <button
                 onClick={() => remove(a.id)}
                 className="text-muted-foreground hover:text-destructive transition-colors"
