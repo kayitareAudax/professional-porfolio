@@ -31,7 +31,7 @@ export function AdminEducation({
       await adminCreateEducation({
         name: form.degree.trim(),
         description: form.description.trim(),
-        startDate: form.startDate || new Date().toISOString(),
+        startDate: form.startDate || new Date().toISOString().slice(0, 10),
         endDate: form.isCurrent ? undefined : form.endDate || undefined,
       });
       await setEducation();

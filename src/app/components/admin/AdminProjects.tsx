@@ -21,7 +21,7 @@ export function AdminProjects({
     tags: [],
     github: "",
     live: "",
-    image: "",
+    imageUrl: "",
   });
   const [form, setForm] = useState<Project>(blank());
   const [selectedSkillIds, setSelectedSkillIds] = useState<string[]>([]);
@@ -49,7 +49,7 @@ export function AdminProjects({
         projectDescription: form.description.trim(),
         projectUrl: form.live || undefined,
         githubUrl: form.github || undefined,
-        imageUrl: form.image || undefined,
+        imageUrl: form.imageUrl || undefined,
         skillIds: selectedSkillIds,
       });
       await setProjects();
@@ -173,8 +173,8 @@ export function AdminProjects({
         </div>
         <ImageUploadField
           label="Project Image"
-          value={form.image}
-          onChange={(url) => setForm({ ...form, image: url })}
+          value={form.imageUrl}
+          onChange={(url) => setForm({ ...form, imageUrl: url })}
         />
         {field("GitHub URL", "github", "https://github.com/...")}
         {field("Live URL", "live", "https://...")}

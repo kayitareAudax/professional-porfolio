@@ -55,7 +55,7 @@ function mapProject(p: ApiProjectResponse): Project {
     tags: p.skills.map((s) => s.skillName),
     github: p.githubUrl ?? "",
     live: p.projectUrl ?? "",
-    image: p.imageUrl ?? "",
+    imageUrl: p.imageUrl ?? "",
   };
 }
 
