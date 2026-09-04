@@ -122,7 +122,7 @@ export async function loadPublicSkills(): Promise<SkillGroup[]> {
 
 export async function loadPublicProjects(): Promise<Project[]> {
   const res = await getProjects();
-  return res.data.map(mapProject);
+  return res.data?.map(mapProject);
 }
 
 export async function loadPublicExperience(): Promise<WorkExperience[]> {
