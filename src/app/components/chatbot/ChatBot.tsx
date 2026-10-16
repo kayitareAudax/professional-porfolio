@@ -9,7 +9,7 @@ export function ChatBot() {
   const [messages, setMessages] = useState<ChatMsg[]>([
     {
       role: "bot",
-      text: "Hey! I'm Alex's portfolio bot. Ask me about skills, projects, experience, or anything else!",
+      text: "Hey! I'm Audax's portfolio bot. Ask me about skills, projects, experience, or anything else!",
     },
   ]);
   const [input, setInput] = useState("");
@@ -38,7 +38,7 @@ export function ChatBot() {
         onClick={() => setOpen(!open)}
         className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-primary text-primary-foreground flex items-center justify-center shadow-2xl hover:bg-primary/80 transition-all hover:scale-110"
         style={{ borderRadius: "50%" }}
-        title="Chat with Alex's bot"
+        title="Chat with Audax's bot"
       >
         {open ? <X size={20} /> : <Bot size={22} />}
       </button>
@@ -54,7 +54,7 @@ export function ChatBot() {
             </div>
             <div>
               <p className="font-sans font-medium text-sm text-foreground">
-                Ask Alex
+                Ask Audax
               </p>
               <p className="font-mono text-[10px] text-primary tracking-widest">
                 ONLINE

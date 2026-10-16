@@ -31,7 +31,7 @@ export function NavBar({
           href="#home"
           className="font-mono text-sm tracking-widest text-primary uppercase"
         >
-          AR.
+          AK.
         </a>
 
         <ul className="hidden md:flex items-center gap-8">
