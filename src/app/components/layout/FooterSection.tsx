@@ -40,7 +40,7 @@ export function FooterSection() {
               {[
                 {
                   icon: <Mail size={18} />,
-                  href: "mailto:alex.rivera@email.com",
+                  href: "mailto:kayitareaudax@gmail.com",
                   label: "Email",
                 },
                 { icon: <Github size={18} />, href: "#", label: "GitHub" },
@@ -121,10 +121,10 @@ export function FooterSection() {
 
         <div className="flex items-center justify-between flex-wrap gap-4 pt-8 border-t border-border">
           <span className="font-mono text-xs text-muted-foreground tracking-widest">
-            AR.
+            AK.
           </span>
           <span className="font-mono text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Alex Rivera — Built with React
+            © {new Date().getFullYear()} Kayitare Audax — Built with React
           </span>
           <div className="flex items-center gap-6">
             {NAV_LINKS.slice(0, 4).map((link) => (

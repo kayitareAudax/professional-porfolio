@@ -28,9 +28,9 @@ export function ProjectsSection({ projects }: { projects: Project[] }) {
               className="group bg-card border border-border hover:border-primary/40 transition-all duration-300 overflow-hidden flex flex-col"
             >
               <div className="overflow-hidden h-40 bg-secondary relative">
-                {p.image ? (
+                {p.imageUrl ? (
                   <img
-                    src={p.image}
+                    src={p.imageUrl}
                     alt={p.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 brightness-75 group-hover:brightness-90"
                   />
@@ -64,6 +64,7 @@ export function ProjectsSection({ projects }: { projects: Project[] }) {
                 <div className="flex items-center gap-4 pt-4 border-t border-border">
                   {p.github && (
                     <a
+                      target="_blank"
                       href={p.github}
                       className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
                     >
@@ -72,6 +73,7 @@ export function ProjectsSection({ projects }: { projects: Project[] }) {
                   )}
                   {p.live && (
                     <a
+                      target="_blank"
                       href={p.live}
                       className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors"
                     >

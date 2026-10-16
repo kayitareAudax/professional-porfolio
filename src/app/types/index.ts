@@ -10,7 +10,7 @@ export interface Project {
   tags: string[];
   github: string;
   live: string;
-  image: string;
+  imageUrl: string;
 }
 
 export interface WorkExperience {

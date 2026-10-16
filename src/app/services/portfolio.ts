@@ -55,7 +55,7 @@ function mapProject(p: ApiProjectResponse): Project {
     tags: p.skills.map((s) => s.skillName),
     github: p.githubUrl ?? "",
     live: p.projectUrl ?? "",
-    image: p.imageUrl ?? "",
+    imageUrl: p.imageUrl ?? "",
   };
 }
 
@@ -122,7 +122,7 @@ export async function loadPublicSkills(): Promise<SkillGroup[]> {
 
 export async function loadPublicProjects(): Promise<Project[]> {
   const res = await getProjects();
-  return res.data.map(mapProject);
+  return res.data?.map(mapProject);
 }
 
 export async function loadPublicExperience(): Promise<WorkExperience[]> {

@@ -52,7 +52,7 @@ export function HeroSection() {
             <div className="relative w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 bg-secondary overflow-hidden">
               <img
                 src="https://plain-apac-prod-public.komododecks.com/202607/13/QD3cdhUTTede4GfRsu0N/image.jpg?w=500&h=500&fit=crop&auto=format"
-                alt="Alex Rivera – Software Engineer"
+                alt="Kayitare Audax – Software Engineer"
                 className="w-full h-full object-cover object-center"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />

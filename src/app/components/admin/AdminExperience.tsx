@@ -48,7 +48,7 @@ export function AdminExperience({
         role: form.role.trim(),
         description: form.description.trim(),
         companyName: form.company.trim(),
-        startDate: form.startDate || new Date().toISOString(),
+        startDate: form.startDate || new Date().toISOString().slice(0, 10),
         endDate: form.isCurrent ? undefined : form.endDate || undefined,
         skillIds: selectedSkillIds,
       });
